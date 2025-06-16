@@ -28,8 +28,22 @@ public class BookController {
     }
 
     @GetMapping("/api/books")
-    public List<Book> getBooks () {
-        return books;
+    public List<Book> getBooks (@RequestParam(required = false) String category) {
+
+        if (category == null) {
+            return books;
+        }
+
+        List<Book> filteredBooks = new ArrayList<>();
+
+        for (Book book : books) {
+            if (book.getCategory().equalsIgnoreCase(category)) {
+                filteredBooks.add(book);
+            }
+        }
+
+
+        return filteredBooks;
     }
 
 
