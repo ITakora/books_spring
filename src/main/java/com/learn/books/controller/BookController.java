@@ -2,10 +2,7 @@ package com.learn.books.controller;
 
 
 import com.learn.books.entity.Book;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,17 +31,10 @@ public class BookController {
             return books;
         }
 
-        List<Book> filteredBooks = new ArrayList<>();
-
-        for (Book book : books) {
-            if (book.getCategory().equalsIgnoreCase(category)) {
-                filteredBooks.add(book);
-            }
-        }
-
-
-        return filteredBooks;
+       return books.stream().filter(book -> book.getCategory().equalsIgnoreCase(category)).toList();
     }
+
+
 
 
     @GetMapping("/api/books/{title}")
@@ -57,6 +47,21 @@ public class BookController {
         return null;
 
 //        return books.stream().filter(book -> book.getTitle().equalsIgnoreCase(title)).findFirst().orElse(null);
+
+
+    }
+
+    @PostMapping("/api/books")
+    public void createBook(@RequestBody Book newbook) {
+
+        
+
+
+        boolean isNewBook = books.stream().noneMatch(book -> book.getTitle().equalsIgnoreCase(newbook.getTitle()));
+
+        if (isNewBook) {
+            books.add(newbook);
+        }
 
 
     }
