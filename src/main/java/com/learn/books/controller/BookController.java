@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@RequestMapping("/api/books")
 public class BookController {
 
     private final List<Book> books = new ArrayList<>();
@@ -24,7 +25,7 @@ public class BookController {
         ));
     }
 
-    @GetMapping("/api/books")
+    @GetMapping
     public List<Book> getBooks (@RequestParam(required = false) String category) {
 
         if (category == null) {
@@ -37,7 +38,7 @@ public class BookController {
 
 
 
-    @GetMapping("/api/books/{title}")
+    @GetMapping("/{title}")
     public Book getBookByTitle (@PathVariable String title) {
         for (Book book : books) {
             if (book.getTitle().equalsIgnoreCase(title)) {
@@ -51,7 +52,7 @@ public class BookController {
 
     }
 
-    @PostMapping("/api/books")
+    @PostMapping
     public void createBook(@RequestBody Book newbook) {
 
         boolean isNewBook = books.stream().noneMatch(book -> book.getTitle().equalsIgnoreCase(newbook.getTitle()));
@@ -63,7 +64,7 @@ public class BookController {
 
     }
 
-    @PutMapping("/api/books/{title}")
+    @PutMapping("/{title}")
     public void updateBook(@PathVariable String title, @RequestBody Book newbook) {
         for(int i=0; i<books.size(); i++) {
             if(books.get(i).getTitle().equalsIgnoreCase(title)) {
@@ -71,6 +72,11 @@ public class BookController {
                 return;
             }
         }
+    }
+
+    @DeleteMapping("/{title}")
+    public void deleteBook(@PathVariable String title) {
+        books.removeIf(book -> book.getTitle().equalsIgnoreCase(title));
     }
 
 
