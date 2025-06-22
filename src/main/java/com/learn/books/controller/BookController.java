@@ -54,9 +54,6 @@ public class BookController {
     @PostMapping("/api/books")
     public void createBook(@RequestBody Book newbook) {
 
-        
-
-
         boolean isNewBook = books.stream().noneMatch(book -> book.getTitle().equalsIgnoreCase(newbook.getTitle()));
 
         if (isNewBook) {
@@ -65,4 +62,16 @@ public class BookController {
 
 
     }
+
+    @PutMapping("/api/books/{title}")
+    public void updateBook(@PathVariable String title, @RequestBody Book newbook) {
+        for(int i=0; i<books.size(); i++) {
+            if(books.get(i).getTitle().equalsIgnoreCase(title)) {
+                books.set(i, newbook);
+                return;
+            }
+        }
+    }
+
+
 }
