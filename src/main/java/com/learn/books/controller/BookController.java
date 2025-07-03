@@ -2,6 +2,7 @@ package com.learn.books.controller;
 
 
 import com.learn.books.entity.Book;
+import com.learn.books.request.BookRequest;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -56,14 +57,13 @@ public class BookController {
     }
 
     @PostMapping
-    public void createBook(@RequestBody Book newbook) {
+    public void createBook(@RequestBody BookRequest bookRequest) {
+        long id = books.isEmpty() ?  1 :  books.get(books.size()-1).getId() +1;
+        
 
-        boolean isNewBook = books.stream().noneMatch(book -> book.getTitle().equalsIgnoreCase(newbook.getTitle()));
+        Book book = convertToBook(id, bookRequest);
 
-        if (isNewBook) {
-            books.add(newbook);
-        }
-
+        books.add(book);
 
     }
 
@@ -80,6 +80,17 @@ public class BookController {
     @DeleteMapping("/{id}")
     public void deleteBook(@PathVariable long id) {
         books.removeIf(book -> book.getId() == id);
+    }
+
+
+    private Book convertToBook (long id, BookRequest bookRequest) {
+        return new Book(
+                id,
+                bookRequest.getTitle(),
+                bookRequest.getAuthor(),
+                bookRequest.getCategory(),
+                bookRequest.getRating()
+        );
     }
 
 
