@@ -1,15 +1,28 @@
 package com.learn.books.entity;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Getter;
 import lombok.Setter;
 
 @Getter
 @Setter
 public class Book {
+
+    @Min(1)
+    @Max(5)
     private long id;
+
+
     private String title;
+
+
     private String author;
+
+
     private String category;
+
+    
     private int rating;
 
     public Book(long id,String title, String author, String category, int rating) {
