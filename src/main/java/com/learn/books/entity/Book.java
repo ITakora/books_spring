@@ -2,6 +2,7 @@ package com.learn.books.entity;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -16,13 +17,12 @@ public class Book {
 
     private String title;
 
-
     private String author;
 
 
     private String category;
 
-    
+
     private int rating;
 
     public Book(long id,String title, String author, String category, int rating) {

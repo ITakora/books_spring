@@ -3,6 +3,9 @@ package com.learn.books.controller;
 
 import com.learn.books.entity.Book;
 import com.learn.books.request.BookRequest;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -29,6 +32,7 @@ public class BookController {
         ));
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping
     public List<Book> getBooks (@RequestParam(required = false) String category) {
 
@@ -41,9 +45,9 @@ public class BookController {
 
 
 
-
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/{id}")
-    public Book getBookById (@PathVariable long id) {
+    public Book getBookById (@PathVariable @Min(value = 1) long id) {
 //        for (Book book : books) {
 //            if (book.getId() == id) {
 //                return book;
@@ -51,13 +55,15 @@ public class BookController {
 //        }
 //        return null;
 
+
         return books.stream().filter(book -> book.getId() == id).findFirst().orElse(null);
 
 
     }
 
+    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping
-    public void createBook(@RequestBody BookRequest bookRequest) {
+    public void createBook(@Valid @RequestBody BookRequest bookRequest) {
         long id = books.isEmpty() ?  1 :  books.get(books.size()-1).getId() +1;
         
 
@@ -67,8 +73,9 @@ public class BookController {
 
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
-    public void updateBook(@PathVariable long id, @RequestBody BookRequest bookRequest) {
+    public void updateBook(@PathVariable @Min(value = 1) long id,@Valid @RequestBody BookRequest bookRequest) {
         for(int i=0; i<books.size(); i++) {
             if(books.get(i).getId() == id) {
                 Book newBook = convertToBook(id, bookRequest);
@@ -78,13 +85,14 @@ public class BookController {
         }
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
-    public void deleteBook(@PathVariable long id) {
+    public void deleteBook(@PathVariable @Min(value = 1) long id) {
         books.removeIf(book -> book.getId() == id);
     }
 
 
-    private Book convertToBook (long id, BookRequest bookRequest) {
+    private Book convertToBook ( @Min(value = 1) long id,  BookRequest bookRequest) {
         return new Book(
                 id,
                 bookRequest.getTitle(),
