@@ -2,13 +2,13 @@ package com.learn.books.controller;
 
 
 import com.learn.books.entity.Book;
-import com.learn.books.exception.BookErrorResponse;
+
 import com.learn.books.exception.BookNotFoundException;
 import com.learn.books.request.BookRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -103,7 +103,6 @@ public class BookController {
         books.removeIf(book -> book.getId() == id);
     }
 
-
     private Book convertToBook ( @Min(value = 1) long id,  BookRequest bookRequest) {
         return new Book(
                 id,
@@ -113,17 +112,4 @@ public class BookController {
                 bookRequest.getRating()
         );
     }
-
-    @ExceptionHandler
-    public ResponseEntity<BookErrorResponse> handleException (BookNotFoundException exc) {
-        BookErrorResponse bookErrorResponse = new BookErrorResponse(
-                HttpStatus.NOT_FOUND.value(),
-                exc.getMessage(),
-                System.currentTimeMillis()
-        );
-
-        return new ResponseEntity<>(bookErrorResponse, HttpStatus.NOT_FOUND);
-    }
-
-
 }
