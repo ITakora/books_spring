@@ -2,10 +2,13 @@ package com.learn.books.controller;
 
 
 import com.learn.books.entity.Book;
+import com.learn.books.exception.BookErrorResponse;
+import com.learn.books.exception.BookNotFoundException;
 import com.learn.books.request.BookRequest;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
@@ -56,7 +59,7 @@ public class BookController {
 //        return null;
 
 
-        return books.stream().filter(book -> book.getId() == id).findFirst().orElse(null);
+        return books.stream().filter(book -> book.getId() == id).findFirst().orElseThrow(() -> new BookNotFoundException("Book not found - " + id));
 
 
     }
@@ -75,19 +78,28 @@ public class BookController {
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PutMapping("/{id}")
-    public void updateBook(@PathVariable @Min(value = 1) long id,@Valid @RequestBody BookRequest bookRequest) {
+    public Book updateBook(@PathVariable @Min(value = 1) long id,@Valid @RequestBody BookRequest bookRequest) {
         for(int i=0; i<books.size(); i++) {
             if(books.get(i).getId() == id) {
                 Book newBook = convertToBook(id, bookRequest);
                 books.set(i, newBook);
-                return;
+                return newBook;
             }
         }
+
+        throw new BookNotFoundException("Book not found - " + id);
+
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @DeleteMapping("/{id}")
     public void deleteBook(@PathVariable @Min(value = 1) long id) {
+
+         books.stream().
+                 filter(book -> book.getId() == id).
+                 findFirst().
+                 orElseThrow(() -> new BookNotFoundException("Book not found - " + id));
+
         books.removeIf(book -> book.getId() == id);
     }
 
@@ -100,6 +112,17 @@ public class BookController {
                 bookRequest.getCategory(),
                 bookRequest.getRating()
         );
+    }
+
+    @ExceptionHandler
+    public ResponseEntity<BookErrorResponse> handleException (BookNotFoundException exc) {
+        BookErrorResponse bookErrorResponse = new BookErrorResponse(
+                HttpStatus.NOT_FOUND.value(),
+                exc.getMessage(),
+                System.currentTimeMillis()
+        );
+
+        return new ResponseEntity<>(bookErrorResponse, HttpStatus.NOT_FOUND);
     }
 
 
